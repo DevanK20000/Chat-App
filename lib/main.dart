@@ -1,4 +1,4 @@
-import 'package:chat_app_college_project/views/signin.dart';
+import 'package:chat_app_college_project/views/signnup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         backgroundColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Signn(),
+      home: SignUp(),
     );
   }
 }
