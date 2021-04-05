@@ -3,7 +3,8 @@ import 'package:chat_app_college_project/widgets/buttons.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
-  SignIn({Key key}) : super(key: key);
+  final Function toggle;
+  SignIn(this.toggle);
 
   @override
   _SignnState createState() => _SignnState();
@@ -51,7 +52,7 @@ class _SignnState extends State<SignIn> {
                 SizedBox(
                   height: 15,
                 ),
-                signinwithemail(0),
+                signinwithemail(0, () {}),
                 SizedBox(height: 10),
                 signinwithgoogle(),
                 SizedBox(height: 10),
@@ -60,7 +61,7 @@ class _SignnState extends State<SignIn> {
                   children: [
                     Text('Don\'t have an account?'),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: widget.toggle,
                       child: Text('Register now'),
                     )
                   ],

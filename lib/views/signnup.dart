@@ -1,11 +1,14 @@
 import 'package:chat_app_college_project/services/auth.dart';
+import 'package:chat_app_college_project/services/database.dart';
+import 'package:chat_app_college_project/views/chatroom.dart';
 import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/widgets/buttons.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
-  SignUp({Key key}) : super(key: key);
+  final Function toggle;
+  SignUp(this.toggle);
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -14,6 +17,8 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   bool isLoading = false;
   final formkey = GlobalKey<FormState>();
+
+  DataBaseMethod dataBaseMethod = new DataBaseMethod();
   AuthMethod authMethod = new AuthMethod();
   TextEditingController usernameTextEditingController =
       new TextEditingController();
@@ -27,10 +32,21 @@ class _SignUpState extends State<SignUp> {
       setState(() {
         isLoading = true;
       });
+
+      Map<String, String> userInfoMap = {
+        "user": usernameTextEditingController.text,
+        "email": emailTextEditingController.text,
+      };
+
+      dataBaseMethod.uploadUserInfo(userInfoMap);
+
       authMethod
           .signInWithEmailAndPassword(emailTextEditingController.text,
               passwordTextEditingController.text)
           .then((value) => print(value));
+
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => ChatRoom()));
     }
   }
 
@@ -112,7 +128,7 @@ class _SignUpState extends State<SignUp> {
                       SizedBox(
                         height: 15,
                       ),
-                      signinwithemail(1),
+                      signinwithemail(1, signMeUp),
                       SizedBox(height: 10),
                       signinwithgoogle(),
                       SizedBox(height: 10),
@@ -121,7 +137,7 @@ class _SignUpState extends State<SignUp> {
                         children: [
                           Text('Have an account?'),
                           TextButton(
-                            onPressed: signMeUp,
+                            onPressed: widget.toggle,
                             child: Text('Login now'),
                           )
                         ],

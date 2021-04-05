@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-Widget signinwithemail(int i) {
+Widget signinwithemail(int i, Function log) {
   return Container(
     height: 50.0,
     padding: EdgeInsets.zero,
     child: ElevatedButton(
-      onPressed: () {},
+      onPressed: log,
       style: ButtonStyle(
         padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

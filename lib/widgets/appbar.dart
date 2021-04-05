@@ -9,6 +9,9 @@ Widget appbarmain(BuildContext context) {
         fontSize: 30,
       ),
     ),
+    iconTheme: IconThemeData(
+      color: Colors.blue, //change your color here
+    ),
     brightness: Brightness.light,
     backgroundColor: Colors.white.withOpacity(0),
     elevation: 0,
