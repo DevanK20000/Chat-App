@@ -5,10 +5,27 @@ class DataBaseMethod {
     FirebaseFirestore.instance.collection("users").add(userMap);
   }
 
-  getUsersByUsername(String username) {
-    FirebaseFirestore.instance
+  Future getUsersByUsername(String username) async {
+    return await FirebaseFirestore.instance
         .collection("users")
-        .where("name", isEqualTo: username)
+        .where("user", isEqualTo: username)
         .get();
+  }
+
+  Future getUsersByUserEmail(String userEmail) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .where("email", isEqualTo: userEmail)
+        .get();
+  }
+
+  createChatRoom(String chatRoomId, chatRoomMap) {
+    FirebaseFirestore.instance
+        .collection("ChatRoom")
+        .doc(chatRoomId)
+        .set(chatRoomMap)
+        .catchError((e) {
+      print(e.toString());
+    });
   }
 }

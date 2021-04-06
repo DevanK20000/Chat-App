@@ -1,3 +1,4 @@
+import 'package:chat_app_college_project/helpers/helperfunctions.dart';
 import 'package:chat_app_college_project/services/auth.dart';
 import 'package:chat_app_college_project/services/database.dart';
 import 'package:chat_app_college_project/views/chatroom.dart';
@@ -27,7 +28,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passwordTextEditingController =
       new TextEditingController();
 
-  signMeUp() {
+  signMeUp() async {
     if (formkey.currentState.validate()) {
       setState(() {
         isLoading = true;
@@ -38,12 +39,19 @@ class _SignUpState extends State<SignUp> {
         "email": emailTextEditingController.text,
       };
 
+      HelperFunctions.saveUserEmailSharedPreference(
+          emailTextEditingController.text);
+      HelperFunctions.saveUserNameSharedPreference(
+          usernameTextEditingController.text);
+
       dataBaseMethod.uploadUserInfo(userInfoMap);
 
-      authMethod
+      await authMethod
           .signInWithEmailAndPassword(emailTextEditingController.text,
               passwordTextEditingController.text)
           .then((value) => print(value));
+
+      HelperFunctions.saveUserLoggedInSharedPreference(true);
 
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => ChatRoom()));

@@ -1,6 +1,12 @@
+import 'package:chat_app_college_project/helpers/helperfunctions.dart';
+import 'package:chat_app_college_project/services/auth.dart';
+import 'package:chat_app_college_project/services/database.dart';
 import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/widgets/buttons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import 'chatroom.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggle;
@@ -11,6 +17,59 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignnState extends State<SignIn> {
+  AuthMethod _authMethod = new AuthMethod();
+  final formLogInKey = GlobalKey<FormState>();
+  bool isLoading = false;
+
+  DataBaseMethod dataBaseMethod = new DataBaseMethod();
+
+  TextEditingController emailLogInTextEditingController =
+      new TextEditingController();
+  TextEditingController passwordLogInTextEditingController =
+      new TextEditingController();
+
+  QuerySnapshot snapshotUserInfo;
+
+  signMeIn() async {
+    // dataBaseMethod
+    //     .getUsersByUserEmail(emailLogInTextEditingController.text)
+    //     .then((value) {
+    //   snapshotUserInfo = value;
+    //   HelperFunctions.saveUserNameSharedPreference(
+    //       snapshotUserInfo.docs[1].data()["name"]);
+    // });
+
+    if (formLogInKey.currentState.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+      print(emailLogInTextEditingController.text + "This is email");
+
+      await _authMethod
+          .signInWithEmailAndPassword(emailLogInTextEditingController.text,
+              passwordLogInTextEditingController.text)
+          .then((value) {
+        if (value != null) {
+          dataBaseMethod
+              .getUsersByUserEmail(emailLogInTextEditingController.text)
+              .then((value) {
+            snapshotUserInfo = value;
+            // print(snapshotUserInfo.docs[0].data()["user"]);
+            HelperFunctions.saveUserNameSharedPreference(
+                    value.docs[0].data()["user"])
+                .then((val) {
+              if (val != null) {
+                HelperFunctions.saveUserLoggedInSharedPreference(true);
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => ChatRoom()));
+              }
+            });
+          });
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,19 +86,41 @@ class _SignnState extends State<SignIn> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email',
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
+                Form(
+                  key: formLogInKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        validator: (value) {
+                          return RegExp(
+                                      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+                                      r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+                                      r"{0,253}[a-zA-Z0-9])?)*$")
+                                  .hasMatch(value)
+                              ? null
+                              : 'Please provide an valid email id';
+                        },
+                        controller: emailLogInTextEditingController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Email',
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        obscureText: true,
+                        validator: (value) => value.length > 6
+                            ? null
+                            : 'Password should be more than 6 charcters',
+                        controller: passwordLogInTextEditingController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Password',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Container(
@@ -52,7 +133,7 @@ class _SignnState extends State<SignIn> {
                 SizedBox(
                   height: 15,
                 ),
-                signinwithemail(0, () {}),
+                signinwithemail(0, signMeIn),
                 SizedBox(height: 10),
                 signinwithgoogle(),
                 SizedBox(height: 10),

@@ -1,4 +1,6 @@
 import 'package:chat_app_college_project/helpers/authenticate.dart';
+import 'package:chat_app_college_project/helpers/helperfunctions.dart';
+import 'package:chat_app_college_project/views/chatroom.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +14,28 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  bool userLoggedIn;
+
+  @override
+  void initState() {
+    getLogedInState();
+    super.initState();
+  }
+
+  getLogedInState() async {
+    await HelperFunctions.getUserLoggedInSharedPreference().then((value) {
+      setState(() {
+        userLoggedIn = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +57,11 @@ class MyApp extends StatelessWidget {
               backgroundColor: Colors.white,
               visualDensity: VisualDensity.adaptivePlatformDensity,
             ),
-            home: Authenticate(),
+            home: userLoggedIn
+                ? userLoggedIn
+                    ? ChatRoom()
+                    : Authenticate()
+                : loading(),
           );
         }
         return loading();
