@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-Widget appbarmain(BuildContext context) {
+Widget appbarmain(BuildContext context, String title) {
   return AppBar(
     title: Text(
-      'Chat App',
+      title,
       style: TextStyle(
         color: Colors.blue,
         fontSize: 30,

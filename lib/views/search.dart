@@ -77,8 +77,10 @@ class _SearchState extends State<Search> {
         "chatroomid": chatRoomId
       };
       dataBaseMethod.createChatRoom(chatRoomId, chatRoomMap);
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => ConversationScreen()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ConversationScreen(chatRoomId, username)));
     } else {
       print("connot chat with yourself");
     }
@@ -95,7 +97,7 @@ class _SearchState extends State<Search> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appbarmain(context),
+      appBar: appbarmain(context, Constants.appName),
       body: Container(
         child: Column(
           children: [

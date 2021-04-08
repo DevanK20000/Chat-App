@@ -1,3 +1,4 @@
+import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/helpers/helperfunctions.dart';
 import 'package:chat_app_college_project/services/auth.dart';
 import 'package:chat_app_college_project/services/database.dart';
@@ -73,7 +74,7 @@ class _SignnState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appbarmain(context),
+      appBar: appbarmain(context, Constants.appName),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height - 50,
