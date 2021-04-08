@@ -31,9 +31,15 @@ class _MyAppState extends State<MyApp> {
 
   getLogedInState() async {
     await HelperFunctions.getUserLoggedInSharedPreference().then((value) {
-      setState(() {
-        userLoggedIn = value;
-      });
+      if (value != null) {
+        setState(() {
+          userLoggedIn = value;
+        });
+      } else {
+        setState(() {
+          userLoggedIn = false;
+        });
+      }
     });
   }
 
@@ -50,19 +56,14 @@ class _MyAppState extends State<MyApp> {
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Chat',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              backgroundColor: Colors.white,
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-            ),
-            home: userLoggedIn
-                ? userLoggedIn
-                    ? ChatRoom()
-                    : Authenticate()
-                : loading(),
-          );
+              debugShowCheckedModeBanner: false,
+              title: 'Chat',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+                backgroundColor: Colors.white,
+                visualDensity: VisualDensity.adaptivePlatformDensity,
+              ),
+              home: userLoggedIn ? ChatRoom() : Authenticate());
         }
         return loading();
       },
