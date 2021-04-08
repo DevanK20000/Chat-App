@@ -24,11 +24,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Widget chatMessageList() {
     return StreamBuilder(
       stream: chatMessageStream,
-      // initialData: initialData ,
       builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-                // reverse: true,
+                reverse: true,
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
@@ -74,7 +73,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
         padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
         child: Stack(
           children: [
-            chatMessageList(),
+            Container(
+              margin: EdgeInsets.only(bottom: 65),
+              child: chatMessageList(),
+            ),
             Container(
               alignment: Alignment.bottomCenter,
               child: Stack(

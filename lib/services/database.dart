@@ -45,7 +45,7 @@ class DataBaseMethod {
         .collection("ChatRoom")
         .doc(chatRoomId)
         .collection("chats")
-        .orderBy("time", descending: false)
+        .orderBy("time", descending: true)
         .snapshots();
   }
 
