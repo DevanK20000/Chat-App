@@ -48,14 +48,13 @@ class _SignUpState extends State<SignUp> {
       dataBaseMethod.uploadUserInfo(userInfoMap);
 
       await authMethod
-          .signInWithEmailAndPassword(emailTextEditingController.text,
+          .signUpWithEmailAndPassword(emailTextEditingController.text,
               passwordTextEditingController.text)
-          .then((value) => print(value));
-
-      HelperFunctions.saveUserLoggedInSharedPreference(true);
-
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => ChatRoom()));
+          .then((value) {
+        HelperFunctions.saveUserLoggedInSharedPreference(true);
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => ChatRoom()));
+      });
     }
   }
 
