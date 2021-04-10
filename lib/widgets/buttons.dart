@@ -59,6 +59,7 @@ Widget signinwithgoogle() {
             ),
             borderRadius: BorderRadius.circular(30.0)),
         child: Container(
+          constraints: BoxConstraints(maxWidth: 400.0, minHeight: 50.0),
           padding: EdgeInsets.symmetric(horizontal: 25),
           height: 80,
           child: Row(
