@@ -1,4 +1,6 @@
+import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 
 class DataBaseMethod {
   uploadUserInfo(userMap) {
@@ -54,5 +56,23 @@ class DataBaseMethod {
         .collection("ChatRoom")
         .where("users", arrayContains: username)
         .snapshots();
+  }
+
+  deleteMessage(AsyncSnapshot snapshot, int index) async {
+    await FirebaseFirestore.instance
+        .runTransaction((Transaction myTransaction) async {
+      myTransaction.delete(snapshot.data.docs[index].reference);
+    });
+  }
+
+  deleteMessageOnlyMe(AsyncSnapshot snapshot, int index, data) async {
+    if (snapshot.data.docs[index].data()["deletefor"] == null) {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        transaction.set(
+            snapshot.data.docs[index].reference, data, SetOptions(merge: true));
+      });
+    } else {
+      deleteMessage(snapshot, index);
+    }
   }
 }

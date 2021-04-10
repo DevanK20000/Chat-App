@@ -30,11 +30,24 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 reverse: true,
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
-                  return MessageTile(
-                    snapshot.data.docs[index].data()["message"],
-                    snapshot.data.docs[index].data()["sendBy"] ==
-                        Constants.myName,
-                  );
+                  if (snapshot.data.docs[index].data()["deletefor"] !=
+                      Constants.myName) {
+                    return GestureDetector(
+                      onLongPress: () {
+                        _showMyDialog(
+                          snapshot: snapshot,
+                          index: index,
+                          message: snapshot.data.docs[index].data()["message"],
+                          sendBy: snapshot.data.docs[index].data()["sendBy"],
+                        );
+                      },
+                      child: MessageTile(
+                        snapshot.data.docs[index].data()["message"],
+                        snapshot.data.docs[index].data()["sendBy"] ==
+                            Constants.myName,
+                      ),
+                    );
+                  }
                 },
               )
             : loading();
@@ -45,6 +58,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   sendMessage() {
     if (messageTextEditingController.text.isNotEmpty) {
       Map<String, dynamic> messageMap = {
+        "deletefor": "none",
         "message": messageTextEditingController.text,
         "sendBy": Constants.myName,
         "time": DateTime.now().microsecondsSinceEpoch
@@ -62,6 +76,50 @@ class _ConversationScreenState extends State<ConversationScreen> {
       });
     });
     super.initState();
+  }
+
+  Future _showMyDialog(
+      {String message,
+      String sendBy,
+      AsyncSnapshot snapshot,
+      int index}) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Do you want to delete?'),
+          content: Text("$sendBy : $message"),
+          actions: <Widget>[
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Only me'),
+              onPressed: () {
+                Map<String, String> del;
+                del = {
+                  "deletefor": Constants.myName,
+                };
+                dataBaseMethod.deleteMessageOnlyMe(snapshot, index, del);
+                Navigator.of(context).pop();
+              },
+            ),
+            sendBy == Constants.myName
+                ? TextButton(
+                    child: Text('Yes'),
+                    onPressed: () {
+                      dataBaseMethod.deleteMessage(snapshot, index);
+                      Navigator.of(context).pop();
+                    },
+                  )
+                : null,
+          ],
+        );
+      },
+    );
   }
 
   @override
