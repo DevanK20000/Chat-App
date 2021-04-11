@@ -29,6 +29,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             ? ListView.builder(
                 reverse: true,
                 itemCount: snapshot.data.docs.length,
+                // ignore: missing_return
                 itemBuilder: (context, index) {
                   if (snapshot.data.docs[index].data()["deletefor"] !=
                       Constants.myName) {

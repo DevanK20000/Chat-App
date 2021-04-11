@@ -88,3 +88,39 @@ Widget signinwithgoogle() {
     ),
   );
 }
+
+Widget passwordReset(Function sendResetEmail) {
+  return Container(
+    height: 50.0,
+    padding: EdgeInsets.zero,
+    child: ElevatedButton(
+      onPressed: sendResetEmail,
+      style: ButtonStyle(
+        padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(80.0),
+          ),
+        ),
+      ),
+      child: Ink(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xff374ABE), Color(0xff64B6FF)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(30.0)),
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 400.0, minHeight: 50.0),
+          alignment: Alignment.center,
+          child: Text(
+            "Send password reset email",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
+    ),
+  );
+}

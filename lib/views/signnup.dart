@@ -66,7 +66,7 @@ class _SignUpState extends State<SignUp> {
           ? loading()
           : SingleChildScrollView(
               child: Container(
-                height: MediaQuery.of(context).size.height - 50,
+                height: MediaQuery.of(context).size.height - 95,
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   padding: EdgeInsets.symmetric(
@@ -103,6 +103,7 @@ class _SignUpState extends State<SignUp> {
                                     ? null
                                     : 'Please provide an valid email id';
                               },
+                              keyboardType: TextInputType.emailAddress,
                               controller: emailTextEditingController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
@@ -126,15 +127,15 @@ class _SignUpState extends State<SignUp> {
                           ],
                         ),
                       ),
-                      Container(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text('Forgot password?'),
-                        ),
-                      ),
+                      // Container(
+                      //   alignment: Alignment.centerRight,
+                      //   child: TextButton(
+                      //     onPressed: () {},
+                      //     child: Text('Forgot password?'),
+                      //   ),
+                      // ),
                       SizedBox(
-                        height: 15,
+                        height: 50,
                       ),
                       signinwithemail(1, signMeUp),
                       SizedBox(height: 10),
@@ -150,7 +151,6 @@ class _SignUpState extends State<SignUp> {
                           )
                         ],
                       ),
-                      SizedBox(height: 20),
                     ],
                   ),
                 ),

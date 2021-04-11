@@ -2,6 +2,7 @@ import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/helpers/helperfunctions.dart';
 import 'package:chat_app_college_project/services/auth.dart';
 import 'package:chat_app_college_project/services/database.dart';
+import 'package:chat_app_college_project/views/forgetpassword.dart';
 import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/widgets/buttons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -77,7 +78,7 @@ class _SignnState extends State<SignIn> {
       appBar: appbarmain(context, Constants.appName),
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height - 50,
+          height: MediaQuery.of(context).size.height - 95,
           alignment: Alignment.bottomCenter,
           child: Container(
             padding: EdgeInsets.symmetric(
@@ -127,7 +128,14 @@ class _SignnState extends State<SignIn> {
                 Container(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ForgotPassword(),
+                        ),
+                      );
+                    },
                     child: Text('Forgot password?'),
                   ),
                 ),
@@ -148,7 +156,6 @@ class _SignnState extends State<SignIn> {
                     )
                   ],
                 ),
-                SizedBox(height: 30),
               ],
             ),
           ),
