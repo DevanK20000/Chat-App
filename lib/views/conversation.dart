@@ -23,37 +23,42 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   Widget chatMessageList() {
     return StreamBuilder(
-      stream: chatMessageStream,
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                reverse: true,
-                itemCount: snapshot.data.docs.length,
-                // ignore: missing_return
-                itemBuilder: (context, index) {
-                  if (snapshot.data.docs[index].data()["deletefor"] !=
-                      Constants.myName) {
-                    return GestureDetector(
-                      onLongPress: () {
-                        _showMyDialog(
-                          snapshot: snapshot,
-                          index: index,
-                          message: snapshot.data.docs[index].data()["message"],
-                          sendBy: snapshot.data.docs[index].data()["sendBy"],
-                        );
-                      },
-                      child: MessageTile(
-                        snapshot.data.docs[index].data()["message"],
-                        snapshot.data.docs[index].data()["sendBy"] ==
-                            Constants.myName,
-                      ),
-                    );
-                  }
-                },
-              )
-            : loading();
-      },
-    );
+        stream: chatMessageStream,
+        builder: (context, snapshot) {
+          return snapshot.hasData
+              ? ListView.builder(
+                  reverse: true,
+                  itemCount: snapshot.data.docs.length,
+                  // ignore: missing_return
+                  itemBuilder: (context, index) {
+                    if (snapshot.data.docs[index].data()["deletefor"] !=
+                        Constants.myName) {
+                      return GestureDetector(
+                        onLongPress: () {
+                          _showMyDialog(
+                            snapshot: snapshot,
+                            index: index,
+                            message:
+                                snapshot.data.docs[index].data()["message"],
+                            sendBy: snapshot.data.docs[index].data()["sendBy"],
+                          );
+                        },
+                        child: MessageTile(
+                          snapshot.data.docs[index].data()["message"],
+                          snapshot.data.docs[index].data()["sendBy"] ==
+                              Constants.myName,
+                        ),
+                      );
+                    } else {
+                      return SizedBox(
+                        height: 0,
+                        width: 0,
+                      );
+                    }
+                  },
+                )
+              : loading();
+        });
   }
 
   sendMessage() {

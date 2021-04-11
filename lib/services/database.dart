@@ -65,7 +65,7 @@ class DataBaseMethod {
   }
 
   deleteMessageOnlyMe(AsyncSnapshot snapshot, int index, data) async {
-    if (snapshot.data.docs[index].data()["deletefor"] == null) {
+    if (snapshot.data.docs[index].data()["deletefor"] == "none") {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.set(
             snapshot.data.docs[index].reference, data, SetOptions(merge: true));
