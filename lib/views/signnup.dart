@@ -7,6 +7,7 @@ import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/widgets/buttons.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SignUp extends StatefulWidget {
   final Function toggle;
@@ -28,6 +29,8 @@ class _SignUpState extends State<SignUp> {
       new TextEditingController();
   TextEditingController passwordTextEditingController =
       new TextEditingController();
+  TextEditingController userNumberTextEditingController =
+      new TextEditingController();
 
   signMeUp() async {
     if (formkey.currentState.validate()) {
@@ -35,22 +38,25 @@ class _SignUpState extends State<SignUp> {
         isLoading = true;
       });
 
-      Map<String, String> userInfoMap = {
-        "user": usernameTextEditingController.text,
-        "email": emailTextEditingController.text,
-      };
-
       HelperFunctions.saveUserEmailSharedPreference(
           emailTextEditingController.text);
       HelperFunctions.saveUserNameSharedPreference(
           usernameTextEditingController.text);
 
-      dataBaseMethod.uploadUserInfo(userInfoMap);
-
       await authMethod
           .signUpWithEmailAndPassword(emailTextEditingController.text,
               passwordTextEditingController.text)
           .then((value) {
+        authMethod.addAditionalData(usernameTextEditingController.text, null);
+        Map<String, String> userInfoMap = {
+          "uid": Constants.uid,
+          "user": usernameTextEditingController.text,
+          "email": emailTextEditingController.text,
+          "imageurl": ""
+        };
+
+        dataBaseMethod.uploadUserInfo(userInfoMap, Constants.uid);
+        HelperFunctions.saveUidSharedPreference(Constants.uid);
         HelperFunctions.saveUserLoggedInSharedPreference(true);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => ChatRoom()));
@@ -66,7 +72,7 @@ class _SignUpState extends State<SignUp> {
           ? loading()
           : SingleChildScrollView(
               child: Container(
-                height: MediaQuery.of(context).size.height - 95,
+                height: MediaQuery.of(context).size.height - 80,
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   padding: EdgeInsets.symmetric(
@@ -85,6 +91,7 @@ class _SignUpState extends State<SignUp> {
                                   ? 'Plese provide an valid username'
                                   : null,
                               controller: usernameTextEditingController,
+                              maxLength: 16,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'Username',
@@ -119,6 +126,7 @@ class _SignUpState extends State<SignUp> {
                                   ? null
                                   : 'Password should be more than 6 charcters',
                               controller: passwordTextEditingController,
+                              maxLength: 16,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'Password',
@@ -127,15 +135,8 @@ class _SignUpState extends State<SignUp> {
                           ],
                         ),
                       ),
-                      // Container(
-                      //   alignment: Alignment.centerRight,
-                      //   child: TextButton(
-                      //     onPressed: () {},
-                      //     child: Text('Forgot password?'),
-                      //   ),
-                      // ),
                       SizedBox(
-                        height: 50,
+                        height: 10,
                       ),
                       signinwithemail(1, signMeUp),
                       SizedBox(height: 10),

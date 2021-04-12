@@ -30,11 +30,17 @@ class _ChatRoomState extends State<ChatRoom> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return ChatRoomTile(
-                      snapshot.data.docs[index]
-                          .data()["chatroomid"]
-                          .toString()
-                          .replaceAll(Constants.myName, " ")
-                          .replaceAll("_", " "),
+                      _dataBaseMethod
+                          .getUserByUid(
+                        snapshot.data.docs[index]
+                            .data()["usersUid"]
+                            .toString()
+                            .replaceAll(Constants.uid, " ")
+                            .replaceAll("_", " "),
+                      )
+                          .then((value) {
+                        return value.docs[0].data()["user"];
+                      }).toString(),
                       snapshot.data.docs[index].data()["chatroomid"]);
                 },
               )
@@ -47,12 +53,12 @@ class _ChatRoomState extends State<ChatRoom> {
   void initState() {
     getUserInfo();
     super.initState();
-    // print(Constants.myName);
   }
 
   getUserInfo() async {
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
-    _dataBaseMethod.getChatRoom(Constants.myName).then((value) {
+    Constants.uid = await HelperFunctions.getUidSharedPreference();
+    _dataBaseMethod.getChatRoom(Constants.uid).then((value) {
       setState(() {
         chatRoomStream = value;
       });

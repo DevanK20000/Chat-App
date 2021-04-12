@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 
 class DataBaseMethod {
-  uploadUserInfo(userMap) {
-    FirebaseFirestore.instance.collection("users").add(userMap);
+  uploadUserInfo(userMap, String uid) {
+    FirebaseFirestore.instance.collection("users").doc(uid).set(userMap);
   }
 
   Future getUsersByUsername(String username) async {
@@ -17,6 +17,13 @@ class DataBaseMethod {
     return await FirebaseFirestore.instance
         .collection("users")
         .where("email", isEqualTo: userEmail)
+        .get();
+  }
+
+  Future getUserByUid(String uid) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .where("uid", isEqualTo: uid)
         .get();
   }
 
@@ -50,10 +57,10 @@ class DataBaseMethod {
         .snapshots();
   }
 
-  getChatRoom(String username) async {
+  getChatRoom(String myUID) async {
     return FirebaseFirestore.instance
         .collection("ChatRoom")
-        .where("users", arrayContains: username)
+        .where("usersUid", arrayContains: myUID)
         .snapshots();
   }
 
