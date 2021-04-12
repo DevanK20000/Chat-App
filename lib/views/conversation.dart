@@ -32,7 +32,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   // ignore: missing_return
                   itemBuilder: (context, index) {
                     if (snapshot.data.docs[index].data()["deletefor"] !=
-                        Constants.myName) {
+                        Constants.uid) {
                       return GestureDetector(
                         onLongPress: () {
                           _showMyDialog(
@@ -107,7 +107,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               onPressed: () {
                 Map<String, String> del;
                 del = {
-                  "deletefor": Constants.myName,
+                  "deletefor": Constants.uid,
                 };
                 dataBaseMethod.deleteMessageOnlyMe(snapshot, index, del);
                 Navigator.of(context).pop();
