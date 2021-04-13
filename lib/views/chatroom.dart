@@ -38,6 +38,9 @@ class _ChatRoomState extends State<ChatRoom> {
                           .replaceAll(Constants.uid, "")
                           .replaceAll("_", "")
                           .toString(),
+                      snapshot.data.docs[index].data()["LastMessage"],
+                      snapshot.data.docs[index].data()["SendBy"],
+                      snapshot.data.docs[index].data()["deletefor"],
                       snapshot.data.docs[index].data()["chatroomid"]);
                 },
               )

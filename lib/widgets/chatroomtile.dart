@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/services/database.dart';
 import 'package:chat_app_college_project/views/conversation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,11 @@ import 'package:flutter/material.dart';
 class ChatRoomTile extends StatefulWidget {
   final String uid;
   final String chatroomid;
-  ChatRoomTile(this.uid, this.chatroomid);
+  final String lastmsg;
+  final String sendBy;
+  final String deleteFor;
+  ChatRoomTile(
+      this.uid, this.lastmsg, this.sendBy, this.deleteFor, this.chatroomid);
 
   @override
   _ChatRoomTileState createState() => _ChatRoomTileState();
@@ -15,8 +20,8 @@ class ChatRoomTile extends StatefulWidget {
 class _ChatRoomTileState extends State<ChatRoomTile> {
   DataBaseMethod _dataBaseMethod = new DataBaseMethod();
   String username;
-  String lastText;
   String imageUrl;
+  String lastMessage;
 
   @override
   void initState() {
@@ -62,10 +67,12 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(30),
                       child: CachedNetworkImage(
+                          height: 100,
+                          width: 100,
                           imageUrl: imageUrl,
                           placeholder: (context, url) =>
                               CircularProgressIndicator(),
-                          fit: BoxFit.fitWidth),
+                          fit: BoxFit.cover),
                     ),
             ),
           ),
@@ -73,7 +80,10 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
             username != null ? username : "Loading",
             style: TextStyle(color: Colors.blue),
           ),
-          subtitle: Text("Loading"),
+          subtitle: Text(
+              widget.deleteFor == "all" || widget.deleteFor == Constants.uid
+                  ? "Message deleted"
+                  : widget.lastmsg),
         ),
       ),
     );

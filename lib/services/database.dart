@@ -48,6 +48,16 @@ class DataBaseMethod {
     });
   }
 
+  addLastMessage(String chatRoomId, lastMessageMap) {
+    FirebaseFirestore.instance
+        .collection("ChatRoom")
+        .doc(chatRoomId)
+        .update(lastMessageMap)
+        .catchError((e) {
+      print(e);
+    });
+  }
+
   getConversationMessage(String chatRoomId) async {
     return FirebaseFirestore.instance
         .collection("ChatRoom")
@@ -57,6 +67,15 @@ class DataBaseMethod {
         .snapshots();
   }
 
+  Future getLastMessage(String chatRoomId) async {
+    return FirebaseFirestore.instance
+        .collection("ChatRoom")
+        .doc(chatRoomId)
+        .collection("chats")
+        .orderBy("time", descending: true)
+        .get();
+  }
+
   getChatRoom(String myUID) async {
     return FirebaseFirestore.instance
         .collection("ChatRoom")
@@ -64,21 +83,52 @@ class DataBaseMethod {
         .snapshots();
   }
 
-  deleteMessage(AsyncSnapshot snapshot, int index) async {
+  deleteMessage(AsyncSnapshot snapshot, int index, String chatroomid) async {
+    Map<String, String> del;
+    del = {
+      "deletefor": "all",
+    };
     await FirebaseFirestore.instance
         .runTransaction((Transaction myTransaction) async {
       myTransaction.delete(snapshot.data.docs[index].reference);
     });
+    await FirebaseFirestore.instance
+        .collection("ChatRoom")
+        .doc(chatroomid)
+        .update(del)
+        .catchError((e) {
+      print(e);
+    });
   }
 
-  deleteMessageOnlyMe(AsyncSnapshot snapshot, int index, data) async {
+  deleteMessageOnlyMe(
+      AsyncSnapshot snapshot, int index, data, String chatroomid) async {
     if (snapshot.data.docs[index].data()["deletefor"] == "none") {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.set(
             snapshot.data.docs[index].reference, data, SetOptions(merge: true));
       });
+      await FirebaseFirestore.instance
+          .collection("ChatRoom")
+          .doc(chatroomid)
+          .update(data)
+          .catchError((e) {
+        print(e);
+      });
     } else {
-      deleteMessage(snapshot, index);
+      deleteMessage(snapshot, index, chatroomid);
     }
   }
+
+  // deletforLastmessage(String chatroomid, lastMessageMap) {
+  //   FirebaseFirestore.instance
+  //       .collection("ChatRoom")
+  //       .doc(chatroomid)
+  //       .update(lastMessageMap)
+  //       .catchError(
+  //     (e) {
+  //       print(e);
+  //     },
+  //   );
+  // }
 }

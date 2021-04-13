@@ -69,6 +69,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
         "time": DateTime.now().microsecondsSinceEpoch
       };
       dataBaseMethod.addConversationMessage(widget.chatRoomId, messageMap);
+      Map<String, dynamic> lastMessageMap = {
+        "deletefor": "none",
+        "LastMessage": messageTextEditingController.text,
+        "sendBy": Constants.myName,
+        "time": DateTime.now().microsecondsSinceEpoch
+      };
+      dataBaseMethod.addLastMessage(widget.chatRoomId, lastMessageMap);
       messageTextEditingController.text = "";
     }
   }
@@ -108,7 +115,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 del = {
                   "deletefor": Constants.uid,
                 };
-                dataBaseMethod.deleteMessageOnlyMe(snapshot, index, del);
+                // dataBaseMethod.deletforLastmessage(widget.chatRoomId, del);
+                dataBaseMethod.deleteMessageOnlyMe(
+                    snapshot, index, del, widget.chatRoomId);
                 Navigator.of(context).pop();
               },
             ),
@@ -116,7 +125,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ? TextButton(
                     child: Text('Yes'),
                     onPressed: () {
-                      dataBaseMethod.deleteMessage(snapshot, index);
+                      dataBaseMethod.deleteMessage(
+                          snapshot, index, widget.chatRoomId);
                       Navigator.of(context).pop();
                     },
                   )

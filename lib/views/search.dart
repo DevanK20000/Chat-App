@@ -75,7 +75,11 @@ class _SearchState extends State<Search> {
       List<String> usersUid = [toUid, Constants.uid];
       Map<String, dynamic> chatRoomMap = {
         "usersUid": usersUid,
-        "chatroomid": chatRoomId
+        "chatroomid": chatRoomId,
+        "deletefor": "none",
+        "LastMessage": "No conversation",
+        "sendBy": "",
+        "time": DateTime.now().microsecondsSinceEpoch
       };
       dataBaseMethod.createChatRoom(chatRoomId, chatRoomMap);
       Navigator.push(
