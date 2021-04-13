@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app_college_project/helpers/authenticate.dart';
 import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/helpers/helperfunctions.dart';
@@ -19,6 +20,7 @@ class _ChatRoomState extends State<ChatRoom> {
   AuthMethod _authMethod = new AuthMethod();
   DataBaseMethod _dataBaseMethod = new DataBaseMethod();
   Stream chatRoomStream;
+  String userImageURl;
 
   Widget chatRoomList() {
     return StreamBuilder(
@@ -30,17 +32,12 @@ class _ChatRoomState extends State<ChatRoom> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return ChatRoomTile(
-                      _dataBaseMethod
-                          .getUserByUid(
-                        snapshot.data.docs[index]
-                            .data()["usersUid"]
-                            .toString()
-                            .replaceAll(Constants.uid, " ")
-                            .replaceAll("_", " "),
-                      )
-                          .then((value) {
-                        return value.docs[0].data()["user"];
-                      }).toString(),
+                      snapshot.data.docs[index]
+                          .data()["chatroomid"]
+                          .toString()
+                          .replaceAll(Constants.uid, "")
+                          .replaceAll("_", "")
+                          .toString(),
                       snapshot.data.docs[index].data()["chatroomid"]);
                 },
               )
@@ -58,12 +55,17 @@ class _ChatRoomState extends State<ChatRoom> {
   getUserInfo() async {
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
     Constants.uid = await HelperFunctions.getUidSharedPreference();
+    _dataBaseMethod.getUserByUid(Constants.uid).then((value) {
+      print(value.docs[0].data()["imageurl"] + " URL");
+      setState(() {
+        userImageURl = value.docs[0].data()["imageurl"];
+      });
+    });
     _dataBaseMethod.getChatRoom(Constants.uid).then((value) {
       setState(() {
         chatRoomStream = value;
       });
     });
-    // setState(() {});
   }
 
   @override
@@ -89,9 +91,28 @@ class _ChatRoomState extends State<ChatRoom> {
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Icon(
-                Icons.exit_to_app,
-                color: Colors.black,
+              child: SizedBox(
+                height: 35,
+                width: 35,
+                child: CircleAvatar(
+                  // backgroundColor: Colors.white,
+                  radius: 30,
+                  child: userImageURl == "" || userImageURl == null
+                      ? Icon(Icons.person_outline_sharp)
+                      : SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: CachedNetworkImage(
+                              imageUrl: userImageURl,
+                              placeholder: (context, url) =>
+                                  CircularProgressIndicator(),
+                              fit: BoxFit.fitWidth,
+                            ),
+                          ),
+                        ),
+                ),
               ),
             ),
           )

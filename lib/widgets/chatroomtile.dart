@@ -1,10 +1,37 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app_college_project/services/database.dart';
 import 'package:chat_app_college_project/views/conversation.dart';
 import 'package:flutter/material.dart';
 
-class ChatRoomTile extends StatelessWidget {
-  final String username;
+class ChatRoomTile extends StatefulWidget {
+  final String uid;
   final String chatroomid;
-  ChatRoomTile(this.username, this.chatroomid);
+  ChatRoomTile(this.uid, this.chatroomid);
+
+  @override
+  _ChatRoomTileState createState() => _ChatRoomTileState();
+}
+
+class _ChatRoomTileState extends State<ChatRoomTile> {
+  DataBaseMethod _dataBaseMethod = new DataBaseMethod();
+  String username;
+  String lastText;
+  String imageUrl;
+
+  @override
+  void initState() {
+    getResDetail(widget.uid);
+    super.initState();
+  }
+
+  getResDetail(String uid) async {
+    _dataBaseMethod.getUserByUid(uid).then((value) {
+      setState(() {
+        username = value.docs[0].data()["user"];
+        imageUrl = value.docs[0].data()["imageurl"];
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,23 +42,38 @@ class ChatRoomTile extends StatelessWidget {
       child: InkWell(
         onTap: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      ConversationScreen(chatroomid, username)));
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  ConversationScreen(widget.chatroomid, username),
+            ),
+          );
         },
         child: ListTile(
           // contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           leading: SizedBox(
-            height: 40,
-            width: 40,
+            height: 60,
+            width: 60,
             child: CircleAvatar(
+              backgroundColor: Colors.white,
               radius: 30,
-              child: FittedBox(
-                  child: Text(username.substring(0, 1).toUpperCase())),
+              child: imageUrl == "" || imageUrl == null
+                  ? Icon(Icons.person_outline_sharp)
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(),
+                          fit: BoxFit.fitWidth),
+                    ),
             ),
           ),
-          title: Text(username),
+          title: Text(
+            username != null ? username : "Loading",
+            style: TextStyle(color: Colors.blue),
+          ),
+          subtitle: Text("Loading"),
         ),
       ),
     );

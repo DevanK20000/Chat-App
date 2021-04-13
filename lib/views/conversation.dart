@@ -1,6 +1,5 @@
 import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/services/database.dart';
-import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
 import 'package:chat_app_college_project/widgets/message.dart';
 import 'package:flutter/material.dart';
@@ -131,7 +130,21 @@ class _ConversationScreenState extends State<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appbarmain(context, widget.username),
+      appBar: AppBar(
+        title: Text(
+          widget.username,
+          style: TextStyle(
+            color: Colors.blue,
+            fontSize: 30,
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.blue, //change your color here
+        ),
+        brightness: Brightness.light,
+        backgroundColor: Colors.white.withOpacity(0),
+        elevation: 0,
+      ),
       body: Container(
         alignment: Alignment.bottomCenter,
         padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
