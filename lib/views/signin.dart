@@ -62,6 +62,8 @@ class _SignnState extends State<SignIn> {
                 .then((val) {
               if (val != null) {
                 HelperFunctions.saveUidSharedPreference(Constants.uid);
+                HelperFunctions.saveUserEmailSharedPreference(
+                    Constants.myEmail);
                 HelperFunctions.saveUserLoggedInSharedPreference(true);
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => ChatRoom()));

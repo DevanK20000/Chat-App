@@ -23,6 +23,7 @@ class AuthMethod {
           email: email, password: password);
       UserCredential firebaseUser = result;
       Constants.uid = result.user.uid;
+      Constants.myEmail = result.user.email;
       return _userFromFirebaseUser(firebaseUser);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
