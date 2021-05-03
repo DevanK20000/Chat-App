@@ -1,30 +1,18 @@
 import 'package:chat_app_college_project/helpers/authenticate.dart';
 import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app_college_project/views/editProfile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:chat_app_college_project/services/auth.dart';
-// import 'package:chat_app_college_project/services/database.dart';
 import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:flutter/material.dart';
 
-class Profile extends StatefulWidget {
+class Profile extends StatelessWidget {
   final String userImageURL;
-  Profile(this.userImageURL);
+  final String myBio;
+  Profile(this.userImageURL, this.myBio);
 
-  @override
-  _ProfileState createState() => _ProfileState();
-}
-
-class _ProfileState extends State<Profile> {
-  // DataBaseMethod _dataBaseMethod = new DataBaseMethod();
-  AuthMethod _authMethod = new AuthMethod();
-  String username;
-  String email;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  final AuthMethod _authMethod = new AuthMethod();
 
   _launchURL(String url) async {
     if (await canLaunch(url)) {
@@ -45,33 +33,29 @@ class _ProfileState extends State<Profile> {
             Center(
               child: Hero(
                 tag: 'profile',
-                child: GestureDetector(
-                  onTap: () {},
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: SizedBox(
-                      height: 150,
-                      width: 150,
-                      child: CircleAvatar(
-                        // backgroundColor: Colors.white,
-                        radius: 30,
-                        child: widget.userImageURL == "" ||
-                                widget.userImageURL == null
-                            ? Icon(Icons.person_outline_sharp)
-                            : SizedBox(
-                                height: 147,
-                                width: 147,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(90),
-                                  child: CachedNetworkImage(
-                                    imageUrl: widget.userImageURL,
-                                    placeholder: (context, url) =>
-                                        CircularProgressIndicator(),
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: SizedBox(
+                    height: 150,
+                    width: 150,
+                    child: CircleAvatar(
+                      // backgroundColor: Colors.white,
+                      radius: 30,
+                      child: userImageURL == "" || userImageURL == null
+                          ? Icon(Icons.person_outline_sharp)
+                          : SizedBox(
+                              height: 147,
+                              width: 147,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(90),
+                                child: CachedNetworkImage(
+                                  imageUrl: userImageURL,
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  fit: BoxFit.fitWidth,
                                 ),
                               ),
-                      ),
+                            ),
                     ),
                   ),
                 ),
@@ -93,6 +77,12 @@ class _ProfileState extends State<Profile> {
                 fontSize: 15,
               ),
             ),
+            Text(
+              myBio,
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
             SizedBox(height: 8),
             Card(
               child: Column(
@@ -100,6 +90,10 @@ class _ProfileState extends State<Profile> {
                   ListTile(
                     leading: Icon(Icons.edit_outlined),
                     title: Text("Edit Profile"),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EditProfile(userImageURL))),
                   ),
                   ListTile(
                     leading: Icon(Icons.mail_outline_rounded),

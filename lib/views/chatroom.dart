@@ -22,6 +22,7 @@ class _ChatRoomState extends State<ChatRoom> {
   DataBaseMethod _dataBaseMethod = new DataBaseMethod();
   Stream chatRoomStream;
   String userImageURl;
+  String mybio;
 
   Widget chatRoomList() {
     return StreamBuilder(
@@ -61,9 +62,9 @@ class _ChatRoomState extends State<ChatRoom> {
     Constants.uid = await HelperFunctions.getUidSharedPreference();
     Constants.myEmail = await HelperFunctions.getUserEmailSharedPreference();
     _dataBaseMethod.getUserByUid(Constants.uid).then((value) {
-      print(value.docs[0].data()["imageurl"] + " URL");
       setState(() {
         userImageURl = value.docs[0].data()["imageurl"];
+        mybio = value.docs[0].data()["bio"];
       });
     });
     _dataBaseMethod.getChatRoom(Constants.uid).then((value) {
@@ -96,7 +97,7 @@ class _ChatRoomState extends State<ChatRoom> {
                     ? Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Profile(userImageURl)))
+                            builder: (context) => Profile(userImageURl, mybio)))
                     : print("wait");
               },
               child: Padding(

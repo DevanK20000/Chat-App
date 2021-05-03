@@ -64,7 +64,8 @@ class _SignUpState extends State<SignUp> {
               "uid": Constants.uid,
               "user": usernameTextEditingController.text,
               "email": emailTextEditingController.text,
-              "imageurl": _imageurl
+              "imageurl": _imageurl,
+              "bio": "No Bio",
             };
             authMethod.addAditionalData(
                 usernameTextEditingController.text, _imageurl);
@@ -141,7 +142,6 @@ class _SignUpState extends State<SignUp> {
                     vertical: 20,
                   ),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Expanded(
                         child: GestureDetector(
@@ -177,6 +177,7 @@ class _SignUpState extends State<SignUp> {
                       Form(
                         key: formkey,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             TextFormField(
                               validator: (val) => val.isEmpty || val.length < 4

@@ -1,9 +1,17 @@
+import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 
 class DataBaseMethod {
   uploadUserInfo(userMap, String uid) {
     FirebaseFirestore.instance.collection("users").doc(uid).set(userMap);
+  }
+
+  Future updateProfile(updateMap) async {
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(Constants.uid)
+        .update(updateMap);
   }
 
   Future getUsersByUsername(String username) async {

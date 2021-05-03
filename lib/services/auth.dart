@@ -24,6 +24,7 @@ class AuthMethod {
       UserCredential firebaseUser = result;
       Constants.uid = result.user.uid;
       Constants.myEmail = result.user.email;
+      print(result.toString());
       return _userFromFirebaseUser(firebaseUser);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -44,6 +45,7 @@ class AuthMethod {
       );
       UserCredential firebaseUser = result;
       Constants.uid = result.user.uid;
+      Constants.myEmail = result.user.email;
       return _userFromFirebaseUser(firebaseUser);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
