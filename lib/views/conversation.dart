@@ -1,6 +1,5 @@
 import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/services/database.dart';
-import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
 import 'package:chat_app_college_project/widgets/message.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   // ignore: missing_return
                   itemBuilder: (context, index) {
                     if (snapshot.data.docs[index].data()["deletefor"] !=
-                        Constants.myName) {
+                        Constants.uid) {
                       return GestureDetector(
                         onLongPress: () {
                           _showMyDialog(
@@ -46,7 +45,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         child: MessageTile(
                           snapshot.data.docs[index].data()["message"],
                           snapshot.data.docs[index].data()["sendBy"] ==
-                              Constants.myName,
+                              Constants.uid,
                         ),
                       );
                     } else {
@@ -66,10 +65,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
       Map<String, dynamic> messageMap = {
         "deletefor": "none",
         "message": messageTextEditingController.text,
-        "sendBy": Constants.myName,
+        "sendBy": Constants.uid,
         "time": DateTime.now().microsecondsSinceEpoch
       };
       dataBaseMethod.addConversationMessage(widget.chatRoomId, messageMap);
+      Map<String, dynamic> lastMessageMap = {
+        "deletefor": "none",
+        "LastMessage": messageTextEditingController.text,
+        "sendBy": Constants.myName,
+        "time": DateTime.now().microsecondsSinceEpoch
+      };
+      dataBaseMethod.addLastMessage(widget.chatRoomId, lastMessageMap);
       messageTextEditingController.text = "";
     }
   }
@@ -94,7 +100,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Do you want to delete?'),
-          content: Text("$sendBy : $message"),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               child: Text('No'),
@@ -107,9 +113,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
               onPressed: () {
                 Map<String, String> del;
                 del = {
-                  "deletefor": Constants.myName,
+                  "deletefor": Constants.uid,
                 };
-                dataBaseMethod.deleteMessageOnlyMe(snapshot, index, del);
+                // dataBaseMethod.deletforLastmessage(widget.chatRoomId, del);
+                dataBaseMethod.deleteMessageOnlyMe(
+                    snapshot, index, del, widget.chatRoomId);
                 Navigator.of(context).pop();
               },
             ),
@@ -117,7 +125,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ? TextButton(
                     child: Text('Yes'),
                     onPressed: () {
-                      dataBaseMethod.deleteMessage(snapshot, index);
+                      dataBaseMethod.deleteMessage(
+                          snapshot, index, widget.chatRoomId);
                       Navigator.of(context).pop();
                     },
                   )
@@ -131,7 +140,21 @@ class _ConversationScreenState extends State<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appbarmain(context, widget.username),
+      appBar: AppBar(
+        title: Text(
+          widget.username,
+          style: TextStyle(
+            color: Colors.blue,
+            fontSize: 30,
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.blue, //change your color here
+        ),
+        brightness: Brightness.light,
+        backgroundColor: Colors.white.withOpacity(0),
+        elevation: 0,
+      ),
       body: Container(
         alignment: Alignment.bottomCenter,
         padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),

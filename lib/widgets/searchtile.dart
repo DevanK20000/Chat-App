@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class SearchTile extends StatelessWidget {
   final String userName;
   final String email;
+  final String toUid;
   final Function onMessage;
-  SearchTile({this.userName, this.email, this.onMessage});
+  SearchTile({this.userName, this.email, this.toUid, this.onMessage});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -32,7 +33,7 @@ class SearchTile extends StatelessWidget {
           )),
           child: Text("Message"),
           onPressed: () {
-            onMessage(userName);
+            onMessage(toUid, userName);
           },
         ),
       ),

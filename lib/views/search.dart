@@ -41,6 +41,7 @@ class _SearchState extends State<Search> {
             itemCount: searchSnapshot.docs.length,
             itemBuilder: (context, index) {
               return SearchTile(
+                toUid: searchSnapshot.docs[index].data()["uid"],
                 userName: searchSnapshot.docs[index].data()["user"],
                 email: searchSnapshot.docs[index].data()["email"],
                 onMessage: createChatRoomAndStartConversation,
@@ -68,13 +69,17 @@ class _SearchState extends State<Search> {
     }
   }
 
-  createChatRoomAndStartConversation(String username) {
-    if (username != Constants.myName) {
-      String chatRoomId = getChatRoomId(username, Constants.myName);
-      List<String> users = [username, Constants.myName];
+  createChatRoomAndStartConversation(String toUid, String username) {
+    if (toUid != Constants.uid) {
+      String chatRoomId = getChatRoomId(toUid, Constants.uid);
+      List<String> usersUid = [toUid, Constants.uid];
       Map<String, dynamic> chatRoomMap = {
-        "users": users,
-        "chatroomid": chatRoomId
+        "usersUid": usersUid,
+        "chatroomid": chatRoomId,
+        "deletefor": "none",
+        "LastMessage": "No conversation",
+        "sendBy": "",
+        "time": DateTime.now().microsecondsSinceEpoch
       };
       dataBaseMethod.createChatRoom(chatRoomId, chatRoomMap);
       Navigator.push(

@@ -1,8 +1,10 @@
-import 'package:chat_app_college_project/helpers/authenticate.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:chat_app_college_project/helpers/authenticate.dart';
 import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/helpers/helperfunctions.dart';
-import 'package:chat_app_college_project/services/auth.dart';
+// import 'package:chat_app_college_project/services/auth.dart';
 import 'package:chat_app_college_project/services/database.dart';
+import 'package:chat_app_college_project/views/profile.dart';
 import 'package:chat_app_college_project/views/search.dart';
 import 'package:chat_app_college_project/widgets/chatroomtile.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
@@ -16,9 +18,10 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-  AuthMethod _authMethod = new AuthMethod();
+  // AuthMethod _authMethod = new AuthMethod();
   DataBaseMethod _dataBaseMethod = new DataBaseMethod();
   Stream chatRoomStream;
+  String userImageURl;
 
   Widget chatRoomList() {
     return StreamBuilder(
@@ -33,8 +36,12 @@ class _ChatRoomState extends State<ChatRoom> {
                       snapshot.data.docs[index]
                           .data()["chatroomid"]
                           .toString()
-                          .replaceAll(Constants.myName, " ")
-                          .replaceAll("_", " "),
+                          .replaceAll(Constants.uid, "")
+                          .replaceAll("_", "")
+                          .toString(),
+                      snapshot.data.docs[index].data()["LastMessage"],
+                      snapshot.data.docs[index].data()["SendBy"],
+                      snapshot.data.docs[index].data()["deletefor"],
                       snapshot.data.docs[index].data()["chatroomid"]);
                 },
               )
@@ -47,17 +54,23 @@ class _ChatRoomState extends State<ChatRoom> {
   void initState() {
     getUserInfo();
     super.initState();
-    // print(Constants.myName);
   }
 
   getUserInfo() async {
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
-    _dataBaseMethod.getChatRoom(Constants.myName).then((value) {
+    Constants.uid = await HelperFunctions.getUidSharedPreference();
+    Constants.myEmail = await HelperFunctions.getUserEmailSharedPreference();
+    _dataBaseMethod.getUserByUid(Constants.uid).then((value) {
+      setState(() {
+        Constants.imageUrl = value.docs[0].data()["imageurl"];
+        Constants.bio = value.docs[0].data()["bio"];
+      });
+    });
+    _dataBaseMethod.getChatRoom(Constants.uid).then((value) {
       setState(() {
         chatRoomStream = value;
       });
     });
-    // setState(() {});
   }
 
   @override
@@ -75,17 +88,41 @@ class _ChatRoomState extends State<ChatRoom> {
         backgroundColor: Colors.white.withOpacity(0),
         elevation: 0,
         actions: [
-          GestureDetector(
-            onTap: () {
-              _authMethod.signOut();
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => Authenticate()));
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Icon(
-                Icons.exit_to_app,
-                color: Colors.black,
+          Hero(
+            tag: 'profile',
+            child: GestureDetector(
+              onTap: () {
+                Constants.imageUrl != null
+                    ? Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profile()))
+                    : print("wait");
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: SizedBox(
+                  height: 35,
+                  width: 35,
+                  child: CircleAvatar(
+                    // backgroundColor: Colors.white,
+                    radius: 30,
+                    child:
+                        Constants.imageUrl == "" || Constants.imageUrl == null
+                            ? Icon(Icons.person_outline_sharp)
+                            : SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: CachedNetworkImage(
+                                    imageUrl: Constants.imageUrl,
+                                    placeholder: (context, url) =>
+                                        CircularProgressIndicator(),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                              ),
+                  ),
+                ),
               ),
             ),
           )

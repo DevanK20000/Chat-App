@@ -61,6 +61,9 @@ class _SignnState extends State<SignIn> {
                     value.docs[0].data()["user"])
                 .then((val) {
               if (val != null) {
+                HelperFunctions.saveUidSharedPreference(Constants.uid);
+                HelperFunctions.saveUserEmailSharedPreference(
+                    Constants.myEmail);
                 HelperFunctions.saveUserLoggedInSharedPreference(true);
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => ChatRoom()));
@@ -117,6 +120,7 @@ class _SignnState extends State<SignIn> {
                             ? null
                             : 'Password should be more than 6 charcters',
                         controller: passwordLogInTextEditingController,
+                        maxLength: 16,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Password',
