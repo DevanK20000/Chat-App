@@ -65,7 +65,7 @@ class _SignUpState extends State<SignUp> {
               "user": usernameTextEditingController.text,
               "email": emailTextEditingController.text,
               "imageurl": _imageurl,
-              "bio": "No Bio",
+              "bio": 'no bio'
             };
             authMethod.addAditionalData(
                 usernameTextEditingController.text, _imageurl);
