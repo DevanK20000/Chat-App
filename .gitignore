@@ -46,6 +46,4 @@ app.*.map.json
 /android/app/release
 
 #firebase service
-google-service.json
 .apk
-android/app/google-services.json
