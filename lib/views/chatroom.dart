@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:chat_app_college_project/helpers/authenticate.dart';
 import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/helpers/helperfunctions.dart';
 // import 'package:chat_app_college_project/services/auth.dart';
 import 'package:chat_app_college_project/services/database.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:chat_app_college_project/views/profile.dart';
 import 'package:chat_app_college_project/views/search.dart';
 import 'package:chat_app_college_project/widgets/chatroomtile.dart';
@@ -113,12 +116,17 @@ class _ChatRoomState extends State<ChatRoom> {
                                 width: 30,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(30),
-                                  child: CachedNetworkImage(
-                                    imageUrl: Constants.imageUrl,
-                                    placeholder: (context, url) =>
-                                        CircularProgressIndicator(),
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                                  child: kIsWeb
+                                      ? Image.network(
+                                          Constants.imageUrl,
+                                          fit: BoxFit.fitWidth,
+                                        )
+                                      : CachedNetworkImage(
+                                          imageUrl: Constants.imageUrl,
+                                          placeholder: (context, url) =>
+                                              CircularProgressIndicator(),
+                                          fit: BoxFit.fitWidth,
+                                        ),
                                 ),
                               ),
                   ),

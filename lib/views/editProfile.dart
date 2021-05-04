@@ -10,6 +10,7 @@ import 'package:chat_app_college_project/helpers/helperfunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class EditProfile extends StatefulWidget {
   @override
@@ -171,12 +172,19 @@ class _EditProfileState extends State<EditProfile> {
                                       fit: StackFit.expand,
                                       children: [
                                         _image == null
-                                            ? CachedNetworkImage(
-                                                imageUrl: Constants.imageUrl,
-                                                placeholder: (context, url) =>
-                                                    CircularProgressIndicator(),
-                                                fit: BoxFit.fitWidth,
-                                              )
+                                            ? kIsWeb
+                                                ? Image.network(
+                                                    Constants.imageUrl,
+                                                    fit: BoxFit.fitWidth,
+                                                  )
+                                                : CachedNetworkImage(
+                                                    imageUrl:
+                                                        Constants.imageUrl,
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        CircularProgressIndicator(),
+                                                    fit: BoxFit.fitWidth,
+                                                  )
                                             : Image.file(
                                                 _image,
                                                 fit: BoxFit.fitWidth,
