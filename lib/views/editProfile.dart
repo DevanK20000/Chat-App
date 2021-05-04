@@ -1,24 +1,34 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app_college_project/helpers/constants.dart';
+import 'package:chat_app_college_project/services/auth.dart';
+import 'package:chat_app_college_project/services/storage.dart';
 import 'package:chat_app_college_project/services/database.dart';
 import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/helpers/helperfunctions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfile extends StatefulWidget {
-  final String userImageURL;
-  EditProfile(this.userImageURL);
-
   @override
   _EditProfileState createState() => _EditProfileState();
 }
 
 class _EditProfileState extends State<EditProfile> {
   DataBaseMethod _dataBaseMethod = new DataBaseMethod();
+  AuthMethod _authMethod = new AuthMethod();
+  StorageMethod _storageMethod = new StorageMethod();
+  DefaultCacheManager _cacheManager = new DefaultCacheManager();
   final formLogInKey = GlobalKey<FormState>();
   TextEditingController usernameTextEditingController =
       new TextEditingController();
   TextEditingController bioTextEditingController = new TextEditingController();
+
+  File _image;
+  String _imageurl;
+  final picker = ImagePicker();
 
   @override
   void initState() {
@@ -28,30 +38,101 @@ class _EditProfileState extends State<EditProfile> {
 
   _initVales() {
     usernameTextEditingController.text = Constants.myName;
-    // _dataBaseMethod.getUserByUid(Constants.uid).then((value) {
-    //   setState(() {
-    //     usernameTextEditingController.text = value.docs[0].data()["user"];
-    //   });
-    // });
+    bioTextEditingController.text = Constants.bio;
   }
 
   _updatePRofile() async {
     if (formLogInKey.currentState.validate()) {
-      if (Constants.myName != usernameTextEditingController.text) {
-        Map<String, String> _updateInfoMap = {
-          "user": usernameTextEditingController.text,
-        };
-        _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
-          setState(() {
-            Constants.myName = usernameTextEditingController.text;
-          });
-          HelperFunctions.saveUserNameSharedPreference(
-              usernameTextEditingController.text);
+      if (_image == null) {
+        if (Constants.myName != usernameTextEditingController.text ||
+            Constants.bio != bioTextEditingController.text) {
+          Map<String, String> _updateInfoMap = {
+            "user": usernameTextEditingController.text,
+            "bio": bioTextEditingController.text
+          };
+          _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
+            setState(() {
+              Constants.myName = usernameTextEditingController.text;
+              Constants.bio = bioTextEditingController.text;
+            });
+            HelperFunctions.saveUserNameSharedPreference(
+                usernameTextEditingController.text);
 
-          Navigator.popUntil(context, (route) => route.isFirst);
+            Navigator.popUntil(context, (route) => route.isFirst);
+          });
+        }
+      } else {
+        _storageMethod.uploadImage(_image).then((ref) {
+          _storageMethod.downloadURL().then((uri) {
+            _imageurl = uri;
+            Map<String, String> _updateInfoMap = {
+              "user": usernameTextEditingController.text,
+              "imageurl": _imageurl,
+              "bio": bioTextEditingController.text
+            };
+            _authMethod.addAditionalData(
+                usernameTextEditingController.text, _imageurl);
+            _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
+              setState(() {
+                Constants.myName = usernameTextEditingController.text;
+                Constants.bio = bioTextEditingController.text;
+                Constants.imageUrl = _imageurl;
+              });
+              HelperFunctions.saveUserNameSharedPreference(
+                  usernameTextEditingController.text);
+              _cacheManager.emptyCache();
+              Navigator.popUntil(context, (route) => route.isFirst);
+            });
+          });
         });
       }
     }
+  }
+
+  Future getImage(bool fromCamera) async {
+    final pickedFile = await picker.getImage(
+        source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+        imageQuality: 50,
+        maxHeight: 600,
+        maxWidth: 600);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        getImage(false);
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () {
+                      getImage(true);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   @override
@@ -68,7 +149,7 @@ class _EditProfileState extends State<EditProfile> {
                 child: Hero(
                   tag: 'profile',
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () => _showPicker(context),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: SizedBox(
@@ -77,8 +158,8 @@ class _EditProfileState extends State<EditProfile> {
                         child: CircleAvatar(
                           // backgroundColor: Colors.white,
                           radius: 30,
-                          child: widget.userImageURL == "" ||
-                                  widget.userImageURL == null
+                          child: Constants.imageUrl == "" ||
+                                  Constants.imageUrl == null
                               ? Icon(Icons.person_outline_sharp)
                               : SizedBox(
                                   height: 147,
@@ -89,12 +170,17 @@ class _EditProfileState extends State<EditProfile> {
                                       alignment: AlignmentDirectional.center,
                                       fit: StackFit.expand,
                                       children: [
-                                        CachedNetworkImage(
-                                          imageUrl: widget.userImageURL,
-                                          placeholder: (context, url) =>
-                                              CircularProgressIndicator(),
-                                          fit: BoxFit.fitWidth,
-                                        ),
+                                        _image == null
+                                            ? CachedNetworkImage(
+                                                imageUrl: Constants.imageUrl,
+                                                placeholder: (context, url) =>
+                                                    CircularProgressIndicator(),
+                                                fit: BoxFit.fitWidth,
+                                              )
+                                            : Image.file(
+                                                _image,
+                                                fit: BoxFit.fitWidth,
+                                              ),
                                         CircleAvatar(
                                           backgroundColor:
                                               Colors.blueGrey.withOpacity(0.5),
@@ -133,7 +219,7 @@ class _EditProfileState extends State<EditProfile> {
                       validator: (val) => val.isEmpty || val.length < 4
                           ? 'Bio should be more than 4 letters'
                           : null,
-                      // controller: usernameTextEditingController,
+                      controller: bioTextEditingController,
                       maxLength: 100,
                       maxLines: 10,
                       decoration: InputDecoration(

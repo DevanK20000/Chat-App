@@ -8,10 +8,6 @@ import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatelessWidget {
-  final String userImageURL;
-  final String myBio;
-  Profile(this.userImageURL, this.myBio);
-
   final AuthMethod _authMethod = new AuthMethod();
 
   _launchURL(String url) async {
@@ -41,21 +37,22 @@ class Profile extends StatelessWidget {
                     child: CircleAvatar(
                       // backgroundColor: Colors.white,
                       radius: 30,
-                      child: userImageURL == "" || userImageURL == null
-                          ? Icon(Icons.person_outline_sharp)
-                          : SizedBox(
-                              height: 147,
-                              width: 147,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(90),
-                                child: CachedNetworkImage(
-                                  imageUrl: userImageURL,
-                                  placeholder: (context, url) =>
-                                      CircularProgressIndicator(),
-                                  fit: BoxFit.fitWidth,
+                      child:
+                          Constants.imageUrl == "" || Constants.imageUrl == null
+                              ? Icon(Icons.person_outline_sharp)
+                              : SizedBox(
+                                  height: 147,
+                                  width: 147,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(90),
+                                    child: CachedNetworkImage(
+                                      imageUrl: Constants.imageUrl,
+                                      placeholder: (context, url) =>
+                                          CircularProgressIndicator(),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
                     ),
                   ),
                 ),
@@ -78,7 +75,7 @@ class Profile extends StatelessWidget {
               ),
             ),
             Text(
-              myBio,
+              Constants.bio,
               style: TextStyle(
                 fontSize: 15,
               ),
@@ -90,10 +87,8 @@ class Profile extends StatelessWidget {
                   ListTile(
                     leading: Icon(Icons.edit_outlined),
                     title: Text("Edit Profile"),
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditProfile(userImageURL))),
+                    onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => EditProfile())),
                   ),
                   ListTile(
                     leading: Icon(Icons.mail_outline_rounded),

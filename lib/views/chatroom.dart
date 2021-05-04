@@ -22,7 +22,6 @@ class _ChatRoomState extends State<ChatRoom> {
   DataBaseMethod _dataBaseMethod = new DataBaseMethod();
   Stream chatRoomStream;
   String userImageURl;
-  String mybio;
 
   Widget chatRoomList() {
     return StreamBuilder(
@@ -63,8 +62,8 @@ class _ChatRoomState extends State<ChatRoom> {
     Constants.myEmail = await HelperFunctions.getUserEmailSharedPreference();
     _dataBaseMethod.getUserByUid(Constants.uid).then((value) {
       setState(() {
-        userImageURl = value.docs[0].data()["imageurl"];
-        mybio = value.docs[0].data()["bio"];
+        Constants.imageUrl = value.docs[0].data()["imageurl"];
+        Constants.bio = value.docs[0].data()["bio"];
       });
     });
     _dataBaseMethod.getChatRoom(Constants.uid).then((value) {
@@ -93,11 +92,9 @@ class _ChatRoomState extends State<ChatRoom> {
             tag: 'profile',
             child: GestureDetector(
               onTap: () {
-                userImageURl != null
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Profile(userImageURl, mybio)))
+                Constants.imageUrl != null
+                    ? Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profile()))
                     : print("wait");
               },
               child: Padding(
@@ -108,21 +105,22 @@ class _ChatRoomState extends State<ChatRoom> {
                   child: CircleAvatar(
                     // backgroundColor: Colors.white,
                     radius: 30,
-                    child: userImageURl == "" || userImageURl == null
-                        ? Icon(Icons.person_outline_sharp)
-                        : SizedBox(
-                            height: 30,
-                            width: 30,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: CachedNetworkImage(
-                                imageUrl: userImageURl,
-                                placeholder: (context, url) =>
-                                    CircularProgressIndicator(),
-                                fit: BoxFit.fitWidth,
+                    child:
+                        Constants.imageUrl == "" || Constants.imageUrl == null
+                            ? Icon(Icons.person_outline_sharp)
+                            : SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: CachedNetworkImage(
+                                    imageUrl: Constants.imageUrl,
+                                    placeholder: (context, url) =>
+                                        CircularProgressIndicator(),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
                   ),
                 ),
               ),

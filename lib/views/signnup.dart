@@ -43,40 +43,42 @@ class _SignUpState extends State<SignUp> {
 
   signMeUp() async {
     if (formkey.currentState.validate()) {
-      setState(() {
-        isLoading = true;
-      });
+      if (_image != null) {
+        setState(() {
+          isLoading = true;
+        });
 
-      HelperFunctions.saveUserEmailSharedPreference(
-          emailTextEditingController.text);
-      HelperFunctions.saveUserNameSharedPreference(
-          usernameTextEditingController.text);
+        HelperFunctions.saveUserEmailSharedPreference(
+            emailTextEditingController.text);
+        HelperFunctions.saveUserNameSharedPreference(
+            usernameTextEditingController.text);
 
-      await authMethod
-          .signUpWithEmailAndPassword(emailTextEditingController.text,
-              passwordTextEditingController.text)
-          .then((value) async {
-        _storageMethod.uploadImage(_image).then((ref) {
-          _storageMethod.downloadURL().then((uri) {
-            print(uri + " uri");
-            _imageurl = uri;
-            Map<String, String> userInfoMap = {
-              "uid": Constants.uid,
-              "user": usernameTextEditingController.text,
-              "email": emailTextEditingController.text,
-              "imageurl": _imageurl,
-              "bio": 'no bio'
-            };
-            authMethod.addAditionalData(
-                usernameTextEditingController.text, _imageurl);
-            dataBaseMethod.uploadUserInfo(userInfoMap, Constants.uid);
-            HelperFunctions.saveUidSharedPreference(Constants.uid);
-            HelperFunctions.saveUserLoggedInSharedPreference(true);
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => ChatRoom()));
+        await authMethod
+            .signUpWithEmailAndPassword(emailTextEditingController.text,
+                passwordTextEditingController.text)
+            .then((value) async {
+          _storageMethod.uploadImage(_image).then((ref) {
+            _storageMethod.downloadURL().then((uri) {
+              print(uri + " uri");
+              _imageurl = uri;
+              Map<String, String> userInfoMap = {
+                "uid": Constants.uid,
+                "user": usernameTextEditingController.text,
+                "email": emailTextEditingController.text,
+                "imageurl": _imageurl,
+                "bio": 'no bio'
+              };
+              authMethod.addAditionalData(
+                  usernameTextEditingController.text, _imageurl);
+              dataBaseMethod.uploadUserInfo(userInfoMap, Constants.uid);
+              HelperFunctions.saveUidSharedPreference(Constants.uid);
+              HelperFunctions.saveUserLoggedInSharedPreference(true);
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => ChatRoom()));
+            });
           });
         });
-      });
+      }
     }
   }
 
@@ -157,6 +159,7 @@ class _SignUpState extends State<SignUp> {
                                       _image,
                                       width: 100,
                                       height: 100,
+                                      fit: BoxFit.fitWidth,
                                     ),
                                   )
                                 : Container(
