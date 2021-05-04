@@ -45,7 +45,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         child: MessageTile(
                           snapshot.data.docs[index].data()["message"],
                           snapshot.data.docs[index].data()["sendBy"] ==
-                              Constants.myName,
+                              Constants.uid,
                         ),
                       );
                     } else {
@@ -65,7 +65,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       Map<String, dynamic> messageMap = {
         "deletefor": "none",
         "message": messageTextEditingController.text,
-        "sendBy": Constants.myName,
+        "sendBy": Constants.uid,
         "time": DateTime.now().microsecondsSinceEpoch
       };
       dataBaseMethod.addConversationMessage(widget.chatRoomId, messageMap);
@@ -100,7 +100,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Do you want to delete?'),
-          content: Text("$sendBy : $message"),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               child: Text('No'),
