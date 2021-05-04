@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:chat_app_college_project/helpers/authenticate.dart';
 import 'package:chat_app_college_project/helpers/constants.dart';
