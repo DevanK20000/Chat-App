@@ -12,6 +12,14 @@ class StorageMethod {
         .putFile(image);
   }
 
+  Future uploadImageU8(image) async {
+    return FirebaseStorage.instance
+        .ref()
+        .child("user_image")
+        .child(Constants.uid + ".png")
+        .putData(image);
+  }
+
   Future downloadURL() async {
     return await FirebaseStorage.instance
         .ref()

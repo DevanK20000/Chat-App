@@ -9,6 +9,8 @@ import 'package:chat_app_college_project/views/chatroom.dart';
 import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/widgets/buttons.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,6 +28,7 @@ class _SignUpState extends State<SignUp> {
   final formkey = GlobalKey<FormState>();
 
   File _image;
+  var _imageU8;
   String _imageurl;
   final picker = ImagePicker();
 
@@ -43,7 +46,7 @@ class _SignUpState extends State<SignUp> {
 
   signMeUp() async {
     if (formkey.currentState.validate()) {
-      if (_image != null) {
+      if (_image != null || _imageU8 != null) {
         setState(() {
           isLoading = true;
         });
@@ -57,45 +60,80 @@ class _SignUpState extends State<SignUp> {
             .signUpWithEmailAndPassword(emailTextEditingController.text,
                 passwordTextEditingController.text)
             .then((value) async {
-          _storageMethod.uploadImage(_image).then((ref) {
-            _storageMethod.downloadURL().then((uri) {
-              print(uri + " uri");
-              _imageurl = uri;
-              Map<String, String> userInfoMap = {
-                "uid": Constants.uid,
-                "user": usernameTextEditingController.text,
-                "email": emailTextEditingController.text,
-                "imageurl": _imageurl,
-                "bio": 'no bio'
-              };
-              authMethod.addAditionalData(
-                  usernameTextEditingController.text, _imageurl);
-              dataBaseMethod.uploadUserInfo(userInfoMap, Constants.uid);
-              HelperFunctions.saveUidSharedPreference(Constants.uid);
-              HelperFunctions.saveUserLoggedInSharedPreference(true);
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => ChatRoom()));
-            });
-          });
+          kIsWeb != true
+              ? _storageMethod.uploadImage(_image).then((ref) {
+                  _storageMethod.downloadURL().then((uri) {
+                    print(uri + " uri");
+                    _imageurl = uri;
+                    Map<String, String> userInfoMap = {
+                      "uid": Constants.uid,
+                      "user": usernameTextEditingController.text,
+                      "email": emailTextEditingController.text,
+                      "imageurl": _imageurl,
+                      "bio": 'no bio'
+                    };
+                    authMethod.addAditionalData(
+                        usernameTextEditingController.text, _imageurl);
+                    dataBaseMethod.uploadUserInfo(userInfoMap, Constants.uid);
+                    HelperFunctions.saveUidSharedPreference(Constants.uid);
+                    HelperFunctions.saveUserLoggedInSharedPreference(true);
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => ChatRoom()));
+                  });
+                })
+              : _storageMethod.uploadImageU8(_imageU8).then((ref) {
+                  _storageMethod.downloadURL().then((uri) {
+                    print(uri + " uri");
+                    _imageurl = uri;
+                    Map<String, String> userInfoMap = {
+                      "uid": Constants.uid,
+                      "user": usernameTextEditingController.text,
+                      "email": emailTextEditingController.text,
+                      "imageurl": _imageurl,
+                      "bio": 'no bio'
+                    };
+                    authMethod.addAditionalData(
+                        usernameTextEditingController.text, _imageurl);
+                    dataBaseMethod.uploadUserInfo(userInfoMap, Constants.uid);
+                    HelperFunctions.saveUidSharedPreference(Constants.uid);
+                    HelperFunctions.saveUserLoggedInSharedPreference(true);
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => ChatRoom()));
+                  });
+                });
         });
       }
     }
   }
 
   Future getImage(bool fromCamera) async {
-    final pickedFile = await picker.getImage(
-        source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-        imageQuality: 50,
-        maxHeight: 600,
-        maxWidth: 600);
+    if (kIsWeb != true) {
+      final pickedFile = await picker.getImage(
+          source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+          imageQuality: 50,
+          maxHeight: 600,
+          maxWidth: 600);
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+      setState(() {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+        } else {
+          print('No image selected.');
+        }
+      });
+    } else {
+      FilePickerResult _result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'png', 'jpeg'],
+      );
+      setState(() {
+        if (_result != null) {
+          _imageU8 = _result.files.single.bytes;
+        } else {
+          print('No image selected.');
+        }
+      });
+    }
   }
 
   void _showPicker(context) {
@@ -152,15 +190,22 @@ class _SignUpState extends State<SignUp> {
                           },
                           child: CircleAvatar(
                             radius: 55,
-                            child: _image != null
+                            child: _image != null || _imageU8 != null
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(50),
-                                    child: Image.file(
-                                      _image,
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.fitWidth,
-                                    ),
+                                    child: kIsWeb != true
+                                        ? Image.file(
+                                            _image,
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.fitWidth,
+                                          )
+                                        : Image.memory(
+                                            _imageU8,
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.fitWidth,
+                                          ),
                                   )
                                 : Container(
                                     decoration: BoxDecoration(
