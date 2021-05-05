@@ -31,3 +31,9 @@ jobs:
           projectId: chatapp-3d042
         env:
           FIREBASE_CLI_PREVIEWS: hostingchannels
+      - name: Run Build
+        run: flutter build apk --release
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
+          token: ${{ secrets.GITHUB_TOKEN }}
