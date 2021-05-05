@@ -7,6 +7,7 @@ import 'package:chat_app_college_project/services/storage.dart';
 import 'package:chat_app_college_project/services/database.dart';
 import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:chat_app_college_project/helpers/helperfunctions.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,6 +29,7 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController bioTextEditingController = new TextEditingController();
 
   File _image;
+  var _imageU8;
   String _imageurl;
   final picker = ImagePicker();
 
@@ -44,66 +46,104 @@ class _EditProfileState extends State<EditProfile> {
 
   _updatePRofile() async {
     if (formLogInKey.currentState.validate()) {
-      if (_image == null) {
-        if (Constants.myName != usernameTextEditingController.text ||
-            Constants.bio != bioTextEditingController.text) {
-          Map<String, String> _updateInfoMap = {
-            "user": usernameTextEditingController.text,
-            "bio": bioTextEditingController.text
-          };
-          _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
-            setState(() {
-              Constants.myName = usernameTextEditingController.text;
-              Constants.bio = bioTextEditingController.text;
-            });
-            HelperFunctions.saveUserNameSharedPreference(
-                usernameTextEditingController.text);
-
-            Navigator.popUntil(context, (route) => route.isFirst);
-          });
-        }
-      } else {
-        _storageMethod.uploadImage(_image).then((ref) {
-          _storageMethod.downloadURL().then((uri) {
-            _imageurl = uri;
-            Map<String, String> _updateInfoMap = {
-              "user": usernameTextEditingController.text,
-              "imageurl": _imageurl,
-              "bio": bioTextEditingController.text
-            };
-            _authMethod.addAditionalData(
-                usernameTextEditingController.text, _imageurl);
-            _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
-              setState(() {
-                Constants.myName = usernameTextEditingController.text;
-                Constants.bio = bioTextEditingController.text;
-                Constants.imageUrl = _imageurl;
+      if (_image != null || _imageU8 != null) {
+        kIsWeb != true
+            ? _storageMethod.uploadImage(_image).then((ref) {
+                _storageMethod.downloadURL().then((uri) {
+                  _imageurl = uri;
+                  Map<String, String> _updateInfoMap = {
+                    "user": usernameTextEditingController.text,
+                    "imageurl": _imageurl,
+                    "bio": bioTextEditingController.text
+                  };
+                  _authMethod.addAditionalData(
+                      usernameTextEditingController.text, _imageurl);
+                  _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
+                    setState(() {
+                      Constants.myName = usernameTextEditingController.text;
+                      Constants.bio = bioTextEditingController.text;
+                      Constants.imageUrl = _imageurl;
+                    });
+                    HelperFunctions.saveUserNameSharedPreference(
+                        usernameTextEditingController.text);
+                    _cacheManager.emptyCache();
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  });
+                });
+              })
+            : _storageMethod.uploadImageU8(_imageU8).then((ref) {
+                _storageMethod.downloadURL().then((uri) {
+                  _imageurl = uri;
+                  Map<String, String> _updateInfoMap = {
+                    "user": usernameTextEditingController.text,
+                    "imageurl": _imageurl,
+                    "bio": bioTextEditingController.text
+                  };
+                  _authMethod.addAditionalData(
+                      usernameTextEditingController.text, _imageurl);
+                  _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
+                    setState(() {
+                      Constants.myName = usernameTextEditingController.text;
+                      Constants.bio = bioTextEditingController.text;
+                      Constants.imageUrl = _imageurl;
+                    });
+                    HelperFunctions.saveUserNameSharedPreference(
+                        usernameTextEditingController.text);
+                    _cacheManager.emptyCache();
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  });
+                });
               });
-              HelperFunctions.saveUserNameSharedPreference(
-                  usernameTextEditingController.text);
-              _cacheManager.emptyCache();
-              Navigator.popUntil(context, (route) => route.isFirst);
-            });
+      }
+    } else {
+      if (Constants.myName != usernameTextEditingController.text ||
+          Constants.bio != bioTextEditingController.text) {
+        Map<String, String> _updateInfoMap = {
+          "user": usernameTextEditingController.text,
+          "bio": bioTextEditingController.text
+        };
+        _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
+          setState(() {
+            Constants.myName = usernameTextEditingController.text;
+            Constants.bio = bioTextEditingController.text;
           });
+          HelperFunctions.saveUserNameSharedPreference(
+              usernameTextEditingController.text);
+
+          Navigator.popUntil(context, (route) => route.isFirst);
         });
       }
     }
   }
 
   Future getImage(bool fromCamera) async {
-    final pickedFile = await picker.getImage(
-        source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-        imageQuality: 50,
-        maxHeight: 600,
-        maxWidth: 600);
+    if (kIsWeb != true) {
+      final pickedFile = await picker.getImage(
+          source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+          imageQuality: 50,
+          maxHeight: 600,
+          maxWidth: 600);
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+      setState(() {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+        } else {
+          print('No image selected.');
+        }
+      });
+    } else {
+      FilePickerResult _result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'png', 'jpeg'],
+      );
+      setState(() {
+        if (_result != null) {
+          _imageU8 = _result.files.single.bytes;
+        } else {
+          print('No image selected. web');
+        }
+      });
+    }
   }
 
   void _showPicker(context) {
@@ -171,22 +211,20 @@ class _EditProfileState extends State<EditProfile> {
                                       alignment: AlignmentDirectional.center,
                                       fit: StackFit.expand,
                                       children: [
-                                        _image == null
-                                            ? kIsWeb
-                                                ? Image.network(
-                                                    Constants.imageUrl,
+                                        _image != null || _imageU8 != null
+                                            ? kIsWeb != true
+                                                ? Image.file(
+                                                    _image,
                                                     fit: BoxFit.fitWidth,
                                                   )
-                                                : CachedNetworkImage(
-                                                    imageUrl:
-                                                        Constants.imageUrl,
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        CircularProgressIndicator(),
+                                                : Image.memory(
+                                                    _imageU8,
                                                     fit: BoxFit.fitWidth,
                                                   )
-                                            : Image.file(
-                                                _image,
+                                            : CachedNetworkImage(
+                                                imageUrl: Constants.imageUrl,
+                                                placeholder: (context, url) =>
+                                                    CircularProgressIndicator(),
                                                 fit: BoxFit.fitWidth,
                                               ),
                                         CircleAvatar(
