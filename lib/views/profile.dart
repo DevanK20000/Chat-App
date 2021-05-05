@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:chat_app_college_project/services/auth.dart';
 import 'package:chat_app_college_project/widgets/appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class Profile extends StatelessWidget {
   final AuthMethod _authMethod = new AuthMethod();
@@ -46,17 +45,12 @@ class Profile extends StatelessWidget {
                                   width: 147,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(90),
-                                    child: kIsWeb
-                                        ? Image.network(
-                                            Constants.imageUrl,
-                                            fit: BoxFit.fitWidth,
-                                          )
-                                        : CachedNetworkImage(
-                                            imageUrl: Constants.imageUrl,
-                                            placeholder: (context, url) =>
-                                                CircularProgressIndicator(),
-                                            fit: BoxFit.fitWidth,
-                                          ),
+                                    child: CachedNetworkImage(
+                                      imageUrl: Constants.imageUrl,
+                                      placeholder: (context, url) =>
+                                          CircularProgressIndicator(),
+                                      fit: BoxFit.fitWidth,
+                                    ),
                                   ),
                                 ),
                     ),
