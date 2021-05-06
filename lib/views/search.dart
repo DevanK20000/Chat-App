@@ -45,6 +45,7 @@ class _SearchState extends State<Search> {
                 userName: searchSnapshot.docs[index].data()["user"],
                 email: searchSnapshot.docs[index].data()["email"],
                 onMessage: createChatRoomAndStartConversation,
+                imageURL: searchSnapshot.docs[index].data()["imageurl"],
               );
             });
       } else {
@@ -69,7 +70,8 @@ class _SearchState extends State<Search> {
     }
   }
 
-  createChatRoomAndStartConversation(String toUid, String username) {
+  createChatRoomAndStartConversation(
+      String toUid, String username, String resImageURL) {
     if (toUid != Constants.uid) {
       String chatRoomId = getChatRoomId(toUid, Constants.uid);
       List<String> usersUid = [toUid, Constants.uid];
@@ -85,7 +87,8 @@ class _SearchState extends State<Search> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ConversationScreen(chatRoomId, username)));
+              builder: (context) =>
+                  ConversationScreen(chatRoomId, username, resImageURL)));
     } else {
       print("connot chat with yourself");
     }

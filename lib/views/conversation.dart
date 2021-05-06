@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/services/database.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
@@ -7,7 +8,8 @@ import 'package:flutter/material.dart';
 class ConversationScreen extends StatefulWidget {
   final String chatRoomId;
   final String username;
-  ConversationScreen(this.chatRoomId, this.username);
+  final String repImageURL;
+  ConversationScreen(this.chatRoomId, this.username, this.repImageURL);
 
   @override
   _ConversationScreenState createState() => _ConversationScreenState();
@@ -154,6 +156,46 @@ class _ConversationScreenState extends State<ConversationScreen> {
         brightness: Brightness.light,
         backgroundColor: Colors.white.withOpacity(0),
         elevation: 0,
+        actions: [
+          Hero(
+            tag: 'repProfile',
+            child: GestureDetector(
+              onTap: () {
+                // Constants.imageUrl != null
+                //     ? Navigator.push(context,
+                //         MaterialPageRoute(builder: (context) => Profile()))
+                //     : print("wait");
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: SizedBox(
+                  height: 35,
+                  width: 35,
+                  child: CircleAvatar(
+                    // backgroundColor: Colors.white,
+                    radius: 30,
+                    child:
+                        widget.repImageURL == "" || widget.repImageURL == null
+                            ? Icon(Icons.person_outline_sharp)
+                            : SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: CachedNetworkImage(
+                                    imageUrl: widget.repImageURL,
+                                    placeholder: (context, url) =>
+                                        CircularProgressIndicator(),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                              ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
       body: Container(
         alignment: Alignment.bottomCenter,

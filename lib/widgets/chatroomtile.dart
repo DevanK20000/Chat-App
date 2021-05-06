@@ -50,30 +50,33 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  ConversationScreen(widget.chatroomid, username),
+                  ConversationScreen(widget.chatroomid, username, imageUrl),
             ),
           );
         },
         child: ListTile(
           // contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-          leading: SizedBox(
-            height: 60,
-            width: 60,
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 30,
-              child: imageUrl == "" || imageUrl == null
-                  ? Icon(Icons.person_outline_sharp)
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: CachedNetworkImage(
-                          height: 100,
-                          width: 100,
-                          imageUrl: imageUrl,
-                          placeholder: (context, url) =>
-                              CircularProgressIndicator(),
-                          fit: BoxFit.cover),
-                    ),
+          leading: Hero(
+            tag: 'repProfile',
+            child: SizedBox(
+              height: 60,
+              width: 60,
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 30,
+                child: imageUrl == "" || imageUrl == null
+                    ? Icon(Icons.person_outline_sharp)
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: CachedNetworkImage(
+                            height: 100,
+                            width: 100,
+                            imageUrl: imageUrl,
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            fit: BoxFit.cover),
+                      ),
+              ),
             ),
           ),
           title: Text(
