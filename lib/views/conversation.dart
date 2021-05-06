@@ -72,7 +72,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       Map<String, dynamic> lastMessageMap = {
         "deletefor": "none",
         "LastMessage": messageTextEditingController.text,
-        "sendBy": Constants.myName,
+        "sendBy": Constants.uid,
         "time": DateTime.now().microsecondsSinceEpoch
       };
       dataBaseMethod.addLastMessage(widget.chatRoomId, lastMessageMap);
@@ -121,7 +121,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 Navigator.of(context).pop();
               },
             ),
-            sendBy == Constants.myName
+            sendBy == Constants.uid
                 ? TextButton(
                     child: Text('Yes'),
                     onPressed: () {
