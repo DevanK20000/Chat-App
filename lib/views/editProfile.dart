@@ -94,24 +94,28 @@ class _EditProfileState extends State<EditProfile> {
                   });
                 });
               });
-      }
-    } else {
-      if (Constants.myName != usernameTextEditingController.text ||
-          Constants.bio != bioTextEditingController.text) {
-        Map<String, String> _updateInfoMap = {
-          "user": usernameTextEditingController.text,
-          "bio": bioTextEditingController.text
-        };
-        _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
-          setState(() {
-            Constants.myName = usernameTextEditingController.text;
-            Constants.bio = bioTextEditingController.text;
-          });
-          HelperFunctions.saveUserNameSharedPreference(
-              usernameTextEditingController.text);
+      } else if (usernameTextEditingController.text == null ||
+          bioTextEditingController.text == null ||
+          usernameTextEditingController.text == "" ||
+          bioTextEditingController.text == "") {
+      } else {
+        if (Constants.myName != usernameTextEditingController.text ||
+            Constants.bio != bioTextEditingController.text) {
+          Map<String, String> _updateInfoMap = {
+            "user": usernameTextEditingController.text,
+            "bio": bioTextEditingController.text
+          };
+          _dataBaseMethod.updateProfile(_updateInfoMap).then((value) {
+            setState(() {
+              Constants.myName = usernameTextEditingController.text;
+              Constants.bio = bioTextEditingController.text;
+            });
+            HelperFunctions.saveUserNameSharedPreference(
+                usernameTextEditingController.text);
 
-          Navigator.popUntil(context, (route) => route.isFirst);
-        });
+            Navigator.popUntil(context, (route) => route.isFirst);
+          });
+        }
       }
     }
   }
