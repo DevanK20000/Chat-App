@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app_college_project/helpers/constants.dart';
 import 'package:chat_app_college_project/services/database.dart';
+import 'package:chat_app_college_project/views/repprofile.dart';
 import 'package:chat_app_college_project/widgets/loading.dart';
 import 'package:chat_app_college_project/widgets/message.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,10 @@ class ConversationScreen extends StatefulWidget {
   final String chatRoomId;
   final String username;
   final String repImageURL;
-  ConversationScreen(this.chatRoomId, this.username, this.repImageURL);
+  final String bio;
+  final String email;
+  ConversationScreen(
+      this.chatRoomId, this.username, this.repImageURL, this.bio, this.email);
 
   @override
   _ConversationScreenState createState() => _ConversationScreenState();
@@ -161,10 +165,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
             tag: 'repProfile',
             child: GestureDetector(
               onTap: () {
-                // Constants.imageUrl != null
-                //     ? Navigator.push(context,
-                //         MaterialPageRoute(builder: (context) => Profile()))
-                //     : print("wait");
+                Constants.imageUrl != null
+                    ? Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RepProfile(widget.username,
+                                widget.bio, widget.repImageURL, widget.email)))
+                    : print("wait");
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),

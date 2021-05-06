@@ -22,6 +22,8 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
   String username;
   String imageUrl;
   String lastMessage;
+  String bio;
+  String email;
 
   @override
   void initState() {
@@ -34,6 +36,8 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
       setState(() {
         username = value.docs[0].data()["user"];
         imageUrl = value.docs[0].data()["imageurl"];
+        bio = value.docs[0].data()["bio"];
+        email = value.docs[0].data()["email"];
       });
     });
   }
@@ -49,8 +53,8 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  ConversationScreen(widget.chatroomid, username, imageUrl),
+              builder: (context) => ConversationScreen(
+                  widget.chatroomid, username, imageUrl, bio, email),
             ),
           );
         },

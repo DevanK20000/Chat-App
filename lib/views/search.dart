@@ -41,12 +41,12 @@ class _SearchState extends State<Search> {
             itemCount: searchSnapshot.docs.length,
             itemBuilder: (context, index) {
               return SearchTile(
-                toUid: searchSnapshot.docs[index].data()["uid"],
-                userName: searchSnapshot.docs[index].data()["user"],
-                email: searchSnapshot.docs[index].data()["email"],
-                onMessage: createChatRoomAndStartConversation,
-                imageURL: searchSnapshot.docs[index].data()["imageurl"],
-              );
+                  toUid: searchSnapshot.docs[index].data()["uid"],
+                  userName: searchSnapshot.docs[index].data()["user"],
+                  email: searchSnapshot.docs[index].data()["email"],
+                  onMessage: createChatRoomAndStartConversation,
+                  imageURL: searchSnapshot.docs[index].data()["imageurl"],
+                  bio: searchSnapshot.docs[index].data()["bio"]);
             });
       } else {
         return Container(
@@ -70,25 +70,25 @@ class _SearchState extends State<Search> {
     }
   }
 
-  createChatRoomAndStartConversation(
-      String toUid, String username, String resImageURL) {
-    if (toUid != Constants.uid) {
-      String chatRoomId = getChatRoomId(toUid, Constants.uid);
-      List<String> usersUid = [toUid, Constants.uid];
-      Map<String, dynamic> chatRoomMap = {
+  createChatRoomAndStartConversation(String _toUid, String _username,
+      String _resImageURL, String _bio, String _email) {
+    if (_toUid != Constants.uid) {
+      String _chatRoomId = getChatRoomId(_toUid, Constants.uid);
+      List<String> usersUid = [_toUid, Constants.uid];
+      Map<String, dynamic> _chatRoomMap = {
         "usersUid": usersUid,
-        "chatroomid": chatRoomId,
+        "chatroomid": _chatRoomId,
         "deletefor": "none",
         "LastMessage": "No conversation",
         "sendBy": "",
         "time": DateTime.now().microsecondsSinceEpoch
       };
-      dataBaseMethod.createChatRoom(chatRoomId, chatRoomMap);
+      dataBaseMethod.createChatRoom(_chatRoomId, _chatRoomMap);
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  ConversationScreen(chatRoomId, username, resImageURL)));
+              builder: (context) => ConversationScreen(
+                  _chatRoomId, _username, _resImageURL, _bio, _email)));
     } else {
       print("connot chat with yourself");
     }
