@@ -21,7 +21,7 @@ class RepProfile extends StatelessWidget {
               SizedBox(height: 12),
               Center(
                 child: Hero(
-                  tag: 'repProfile',
+                  tag: email,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: SizedBox(

@@ -162,7 +162,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         elevation: 0,
         actions: [
           Hero(
-            tag: 'repProfile',
+            tag: widget.email,
             child: GestureDetector(
               onTap: () {
                 Constants.imageUrl != null

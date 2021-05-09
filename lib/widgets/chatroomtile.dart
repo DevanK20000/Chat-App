@@ -61,7 +61,7 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
         child: ListTile(
           // contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           leading: Hero(
-            tag: 'repProfile',
+            tag: email,
             child: SizedBox(
               height: 60,
               width: 60,
